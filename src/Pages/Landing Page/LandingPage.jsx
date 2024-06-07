@@ -154,7 +154,7 @@ export default function LandingPage() {
                             </select>
                         </Field>
                         <Field>
-                            <button>OK</button>
+                            <button>Iniciar atendimento</button>
                         </Field>
                         <span>Horário de atendimento de segunda a sábado, das 9:00 às 21:00.</span>
                     </FieldsDiv>

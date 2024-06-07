@@ -55,7 +55,7 @@ export const Field = styled.div`
     button {
         background-color: #00965E;
         color: #ffffff;
-        width: 25%;
+        /* width: 25%; */
         text-decoration: none;
         outline: none;
         border: none;
