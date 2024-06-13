@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { LandingPageContainer, CenterSquare, FieldsDiv, Field, Image } from './LandingPage.styles';
 import assuntos from '../../Components/JSON/AssuntosJSON/Assuntos.json';
+import imagens from '../../Components/JSON/ImagensJSON/Imagens.json';
 
 function validarCPF(cpf) {
     cpf = cpf.replace(/[^\d]+/g, '');
@@ -67,40 +68,27 @@ export default function LandingPage() {
         const queryParams = new URLSearchParams(location.search);
         const partnerParam = queryParams.get('partner');
         setPartner(partnerParam);
-
-        const loadDefaultImage = async () => {
-            const defaultImage = await import('../../Components/Images/cardif_logo.png');
-            setLogo(defaultImage.default);
-        };
-
-        if (partnerParam) {
-            const supportedExtensions = ['PNG', 'png', 'JPG', 'jpg', 'JPEG', 'jpeg'];
-
-            const loadImage = async () => {
-                let logoFound = false;
-                for (const extension of supportedExtensions) {
-                    try {
-                        const image = await import(`../../Components/Images/${partnerParam}.${extension}`);
-                        setLogo(image.default);
-                        logoFound = true;
-                        break;
-                    } catch (error) {
-                        //console.error(`Failed to load image with extension ${extension} for partner ${partner}:`, error);
-                    }
-                }
-                if (!logoFound) {
-                    loadDefaultImage();
-                }
-            };
-
-            loadImage();
+    
+        // Lógica para encontrar a imagem correspondente no JSON
+        const imagemEncontrada = imagens.find(imagem => imagem.cod_campanha === parseInt(partnerParam, 10)); 
+    
+        if (imagemEncontrada) {
+          import(`../../Components/Images/${imagemEncontrada.titulo}`)
+            .then(image => setLogo(image.default))
+            .catch(error => {
+              console.error(`Erro ao carregar a imagem ${imagemEncontrada.titulo}:`, error);
+              import('../../Components/Images/cardif_logo.png') // Imagem padrão em caso de erro
+                .then(defaultImage => setLogo(defaultImage.default));
+            });
         } else {
-            loadDefaultImage();
+          import('../../Components/Images/cardif_logo.png') // Imagem padrão se não encontrar
+            .then(defaultImage => setLogo(defaultImage.default));
         }
-    }, [location.search, location]);
+      }, [location.search]); // Execute apenas quando a URL mudar
+    
 
     const handleDocumentoChange = (e) => {
-        const value = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+        const value = e.target.value.replace(/\D/g, '');
         setDocumento(value);
         if (tipoDocumento === 'CPF' && !validarCPF(value)) {
             setErroDocumento('CPF inválido.');
@@ -131,6 +119,21 @@ export default function LandingPage() {
             return;
         }
 
+        if (!nome.trim()) {
+            alert('Por favor, preencha o nome.');
+            return;
+        }
+
+        if (!documento.trim()) {
+            alert(`Por favor, preencha o ${tipoDocumento}.`);
+            return;
+        }
+
+        if (!assunto.trim()) {
+            alert('Por favor, selecione um assunto.');
+            return;
+        }
+
         const data = {
             Nome: nome,
             CpfCnpj: documento,
@@ -151,14 +154,11 @@ export default function LandingPage() {
             if (!response.ok) {
                 throw new Error('Erro ao salvar os dados');
             }
-
-            alert('Dados salvos com sucesso!');
         } catch (error) {
             console.error('Erro:', error);
             alert('Erro ao salvar os dados');
         }
     };
-
 
     return (
         <>
@@ -194,7 +194,7 @@ export default function LandingPage() {
                             <select name="assunto" id="assunto" value={assunto} onChange={handleAssuntoChange}>
                                 <option value=""></option>
                                 {assuntosOptions.map((assunto) => (
-                                    <option key={assunto.id} value={assunto.id}>
+                                    <option key={assunto.id} value={assunto.assunto}>
                                         {assunto.assunto}
                                     </option>
                                 ))}
