@@ -8,12 +8,12 @@ function validarCPF(cpf) {
     if (cpf.length !== 11) return false;
     let soma = 0;
     let resto;
-    for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i-1, i)) * (11 - i);
+    for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
     resto = (soma * 10) % 11;
     if ((resto === 10) || (resto === 11)) resto = 0;
     if (resto !== parseInt(cpf.substring(9, 10))) return false;
     soma = 0;
-    for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i-1, i)) * (12 - i);
+    for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
     resto = (soma * 10) % 11;
     if ((resto === 10) || (resto === 11)) resto = 0;
     if (resto !== parseInt(cpf.substring(10, 11))) return false;
@@ -143,7 +143,7 @@ export default function LandingPage() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Basic Y2FyZGlmQ2hhdDpRSHdxNGFpV2RoaUxlZ0VEemhLYVJXRE5P'
+                    'Authorization': process.env.REACT_APP_API_AUTH
                 },
                 body: JSON.stringify(data)
             });
@@ -158,6 +158,7 @@ export default function LandingPage() {
             alert('Erro ao salvar os dados');
         }
     };
+
 
     return (
         <>
@@ -180,13 +181,13 @@ export default function LandingPage() {
                         </Field>
                         <Field>
                             <span>{tipoDocumento}:</span>
-                            <input 
-                                type="text" 
-                                value={documento} 
-                                onChange={handleDocumentoChange} 
-                                maxLength={tipoDocumento === 'CPF' ? 11 : 14} 
+                            <input
+                                type="text"
+                                value={documento}
+                                onChange={handleDocumentoChange}
+                                maxLength={tipoDocumento === 'CPF' ? 11 : 14}
                             />
-                            {erroDocumento && <p style={{color: 'red'}}>{erroDocumento}</p>}
+                            {erroDocumento && <p style={{ color: 'red' }}>{erroDocumento}</p>}
                         </Field>
                         <Field>
                             <span>Assunto:</span>
