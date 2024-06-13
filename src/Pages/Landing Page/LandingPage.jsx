@@ -53,6 +53,9 @@ export default function LandingPage() {
     const [tipoDocumento, setTipoDocumento] = useState('CPF');
     const [documento, setDocumento] = useState('');
     const [erroDocumento, setErroDocumento] = useState('');
+    const [nome, setNome] = useState('');
+    const [assunto, setAssunto] = useState('');
+    const [partner, setPartner] = useState(null);
 
     const location = useLocation();
 
@@ -62,26 +65,27 @@ export default function LandingPage() {
 
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
-        const partner = queryParams.get('partner');
+        const partnerParam = queryParams.get('partner');
+        setPartner(partnerParam);
 
         const loadDefaultImage = async () => {
             const defaultImage = await import('../../Components/Images/cardif_logo.png');
             setLogo(defaultImage.default);
         };
 
-        if (partner) {
+        if (partnerParam) {
             const supportedExtensions = ['PNG', 'png', 'JPG', 'jpg', 'JPEG', 'jpeg'];
 
             const loadImage = async () => {
                 let logoFound = false;
                 for (const extension of supportedExtensions) {
                     try {
-                        const image = await import(`../../Components/Images/${partner}.${extension}`);
+                        const image = await import(`../../Components/Images/${partnerParam}.${extension}`);
                         setLogo(image.default);
                         logoFound = true;
                         break;
                     } catch (error) {
-                        console.error(`Failed to load image with extension ${extension} for partner ${partner}:`, error);
+                        //console.error(`Failed to load image with extension ${extension} for partner ${partner}:`, error);
                     }
                 }
                 if (!logoFound) {
@@ -113,6 +117,48 @@ export default function LandingPage() {
         setErroDocumento('');
     };
 
+    const handleNomeChange = (e) => {
+        setNome(e.target.value);
+    };
+
+    const handleAssuntoChange = (e) => {
+        setAssunto(e.target.value);
+    };
+
+    const handleSubmit = async () => {
+        if (erroDocumento) {
+            alert('Por favor, corrija os erros antes de enviar.');
+            return;
+        }
+
+        const data = {
+            Nome: nome,
+            CpfCnpj: documento,
+            Assunto: assunto,
+            Partner: partner
+        };
+
+        try {
+            const response = await fetch('https://br425k19web01.lat.sitel-world.net/cardif_chat/api/SalvarLog', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Basic Y2FyZGlmQ2hhdDpRSHdxNGFpV2RoaUxlZ0VEemhLYVJXRE5P'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao salvar os dados');
+            }
+
+            alert('Dados salvos com sucesso!');
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao salvar os dados');
+        }
+    };
+
     return (
         <>
             <LandingPageContainer>
@@ -123,7 +169,7 @@ export default function LandingPage() {
                     <FieldsDiv>
                         <Field>
                             <span>Nome:</span>
-                            <input type="text" maxLength={100} />
+                            <input type="text" maxLength={100} value={nome} onChange={handleNomeChange} />
                         </Field>
                         <Field>
                             <span>CPF ou CNPJ?</span>
@@ -144,7 +190,7 @@ export default function LandingPage() {
                         </Field>
                         <Field>
                             <span>Assunto:</span>
-                            <select name="assunto" id="assunto">
+                            <select name="assunto" id="assunto" value={assunto} onChange={handleAssuntoChange}>
                                 <option value=""></option>
                                 {assuntosOptions.map((assunto) => (
                                     <option key={assunto.id} value={assunto.id}>
@@ -154,7 +200,7 @@ export default function LandingPage() {
                             </select>
                         </Field>
                         <Field>
-                            <button>Iniciar atendimento</button>
+                            <button onClick={handleSubmit}>Iniciar atendimento</button>
                         </Field>
                         <span>Horário de atendimento de segunda a sábado, das 9:00 às 21:00.</span>
                     </FieldsDiv>

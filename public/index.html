@@ -1,19 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/icon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <title>Cardif Chat</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-  </body>
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/icon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Web site created using create-react-app" />
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <title>Cardif Chat</title>
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+  <div id="oloswcdl-root"></div>
+  <script>
+    // Método executado após o carregamento do webchat
+    window.olosWebChatInit = function (Botkit) {
+      var botParams = {};
+
+      // Verifica se existem parâmetros na URL
+      if (window.location.search != "" && window.location.search.indexOf('=') > -1) {
+        var params = window.location.search;
+
+        params = window.location.search.split('?')[1].split('&');
+
+        if (params && params.length > 0) {
+          for (var i = 0; i < params.length; i++) {
+            var p = params[i].split('=');
+            botParams[p[0]] = decodeURIComponent(p[1]);
+          }
+        }
+      }
+
+      console.log('botParams', botParams);
+
+      window.Botkit = Botkit;
+
+      // Inicializa o bot
+      window.Botkit.boot({ id: null, name: botParams.name, custom: { productId: 100 } });
+    };
+    // Load Webchat API
+    (function (v, cid, gid, cstm, lv, ext, refURL, cfm) {
+      var id = 'oloswcdl-script', s = 'script', d = document;
+      var js, fjs = d.getElementsByTagName(s)[0];
+      var host = "https://olosbotsolutionstatic.blob.core.windows.net/webchat/botkit/v" + v;
+      if (d.getElementById(id)) { return }
+      js = d.createElement(s); js.id = id;
+      js.src = host + "/main.bundle.js?cid=" + cid + '&gid=' + gid + '&version=' + v + '&custom=' + cstm + '&lv=' + lv + '&ext=' + ext + '&use_local_history=1&use_history=1&keep_session=1&refURL=' + refURL + '&cfm=' + cfm;
+      fjs.parentNode.insertBefore(js, fjs);
+    }('3.4.1', 'clientId', 'gatewayId', 'theme', 'server', 'closeButton:0,minimizeButton:0,autoStart:1', '', false));
+
+  </script>
+</body>
+
 </html>
