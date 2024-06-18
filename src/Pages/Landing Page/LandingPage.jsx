@@ -173,7 +173,7 @@ export default function LandingPage() {
                             <input type="text" maxLength={100} value={nome} onChange={handleNomeChange} />
                         </Field>
                         <Field>
-                            <span>CPF ou CNPJ?</span>
+                            <span>CPF ou CNPJ</span>
                             <select name="tipoDocumento" id="tipoDocumento" onChange={handleTipoDocumentoChange}>
                                 <option value="CPF">CPF</option>
                                 <option value="CNPJ">CNPJ</option>
