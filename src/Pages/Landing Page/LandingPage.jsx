@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom'; // Substituído useHistory por useNavigate
 import { LandingPageContainer, CenterSquare, FieldsDiv, Field, Image } from './LandingPage.styles';
 import assuntos from '../../Components/JSON/AssuntosJSON/Assuntos.json';
 import imagens from '../../Components/JSON/ImagensJSON/Imagens.json';
@@ -59,6 +59,7 @@ export default function LandingPage() {
     const [partner, setPartner] = useState(null);
 
     const location = useLocation();
+    const navigate = useNavigate(); // Usando useNavigate
 
     useEffect(() => {
         setAssuntosOptions(assuntos);
@@ -68,24 +69,22 @@ export default function LandingPage() {
         const queryParams = new URLSearchParams(location.search);
         const partnerParam = queryParams.get('partner');
         setPartner(partnerParam);
-    
-        // Lógica para encontrar a imagem correspondente no JSON
-        const imagemEncontrada = imagens.find(imagem => imagem.cod_campanha === parseInt(partnerParam, 10)); 
-    
+
+        const imagemEncontrada = imagens.find(imagem => imagem.cod_campanha === parseInt(partnerParam, 10));
+
         if (imagemEncontrada) {
-          import(`../../Components/Images/${imagemEncontrada.titulo}`)
-            .then(image => setLogo(image.default))
-            .catch(error => {
-              console.error(`Erro ao carregar a imagem ${imagemEncontrada.titulo}:`, error);
-              import('../../Components/Images/cardif_logo.png') // Imagem padrão em caso de erro
-                .then(defaultImage => setLogo(defaultImage.default));
-            });
+            import(`../../Components/Images/${imagemEncontrada.titulo}`)
+                .then(image => setLogo(image.default))
+                .catch(error => {
+                    console.error(`Erro ao carregar a imagem ${imagemEncontrada.titulo}:`, error);
+                    import('../../Components/Images/cardif_logo.png')
+                        .then(defaultImage => setLogo(defaultImage.default));
+                });
         } else {
-          import('../../Components/Images/cardif_logo.png') // Imagem padrão se não encontrar
-            .then(defaultImage => setLogo(defaultImage.default));
+            import('../../Components/Images/cardif_logo.png')
+                .then(defaultImage => setLogo(defaultImage.default));
         }
-      }, [location.search]); // Execute apenas quando a URL mudar
-    
+    }, [location.search]);
 
     const handleDocumentoChange = (e) => {
         const value = e.target.value.replace(/\D/g, '');
@@ -135,10 +134,11 @@ export default function LandingPage() {
         }
 
         const data = {
-            Nome: nome,
-            CpfCnpj: documento,
-            Assunto: assunto,
-            Partner: partner
+            name: nome,
+            identifier: documento,
+            partnerId: partner,
+            partnerName: "",
+            subject: assunto
         };
 
         try {
@@ -154,6 +154,8 @@ export default function LandingPage() {
             if (!response.ok) {
                 throw new Error('Erro ao salvar os dados');
             }
+
+            navigate('/chat', { state: data }); // Passando dados para o componente Chat
         } catch (error) {
             console.error('Erro:', error);
             alert('Erro ao salvar os dados');
@@ -173,7 +175,7 @@ export default function LandingPage() {
                             <input type="text" maxLength={100} value={nome} onChange={handleNomeChange} />
                         </Field>
                         <Field>
-                            <span>CPF ou CNPJ</span>
+                            <span>CPF ou CNPJ?</span>
                             <select name="tipoDocumento" id="tipoDocumento" onChange={handleTipoDocumentoChange}>
                                 <option value="CPF">CPF</option>
                                 <option value="CNPJ">CNPJ</option>
