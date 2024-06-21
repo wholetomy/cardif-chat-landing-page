@@ -142,7 +142,7 @@ export default function LandingPage() {
         };
 
         try {
-            const response = await fetch('https://br425k19web01.foundever.com/cardif_chat/api/SalvarLog', {
+            /* const response = await fetch('https://br425k19web01.foundever.com/cardif_chat/api/SalvarLog', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -153,7 +153,7 @@ export default function LandingPage() {
 
             if (!response.ok) {
                 throw new Error('Erro ao salvar os dados');
-            }
+            } */
 
             navigate('/chat', { state: data }); // Passando dados para o componente Chat
         } catch (error) {
