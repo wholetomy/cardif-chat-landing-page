@@ -32,7 +32,13 @@ function Chat() {
                 console.log('botParams', botParams);
 
                 window.Botkit = Botkit;
-                window.Botkit.boot({ id: null, name: botParams.name, custom: { productId: 100 } });
+                window.Botkit.boot({ id: null, name: botParams.name, custom: { 
+                    name: "${name}",
+                    identifier: "${identifier}",
+                    partnerId: ${partnerId},
+                    partnerName: "${partnerName}",
+                    subject: "${subject}"
+                } });
             };
 
             (function (v, cid, gid, cstm, lv, ext, refURL, cfm) {
