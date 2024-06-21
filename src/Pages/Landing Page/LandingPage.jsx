@@ -142,7 +142,7 @@ export default function LandingPage() {
         };
 
         try {
-            const response = await fetch('https://br425k19web01.lat.sitel-world.net/cardif_chat/api/SalvarLog', {
+            const response = await fetch('https://br425k19web01.foundever.com/cardif_chat/api/SalvarLog', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
