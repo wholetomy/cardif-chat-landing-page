@@ -67,10 +67,10 @@ export default function LandingPage() {
 
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
-        const partnerParam = queryParams.get('partner');
+        const partnerParam = parseInt(queryParams.get('partner'), 10); // Converter para número
         setPartner(partnerParam);
 
-        const imagemEncontrada = imagens.find(imagem => imagem.cod_campanha === parseInt(partnerParam, 10));
+        const imagemEncontrada = imagens.find(imagem => imagem.cod_campanha === partnerParam); // Comparação numérica
 
         if (imagemEncontrada) {
             import(`../../Components/Images/${imagemEncontrada.titulo}`)
